@@ -4,6 +4,7 @@ import inosystem.climed.climedonboard.dto.ContatoDTO;
 import inosystem.climed.climedonboard.dto.PacienteDTO;
 import inosystem.climed.climedonboard.dto.TipoEmailDTO;
 import inosystem.climed.climedonboard.dto.TipoTelefoneDTO;
+import inosystem.climed.climedonboard.mapper.ContatoMapper;
 import inosystem.climed.climedonboard.mapper.PacienteMapper;
 import inosystem.climed.climedonboard.model.Contato;
 import inosystem.climed.climedonboard.model.Paciente;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class PacienteService {
+    private final ContatoMapper contatoMapper;
 
     private final PacienteRepository pacienteRepository;
     private final TipoEmailRepository tipoEmailRepository;
@@ -49,14 +51,18 @@ public class PacienteService {
         Paciente paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado: " + id));
 
+        // Atualiza os campos simples do paciente
         setPacienteFields(paciente, dto);
 
-        // Atualiza contatos
+        // Atualiza a lista de contatos:
+        // limpa a lista existente e adiciona os contatos convertidos mantendo a mesma instância da lista
         paciente.getContatos().clear();
-        List<Contato> contatos = mapContatos(dto.getContatos(), paciente);
-        paciente.setContatos(contatos);
+        paciente.getContatos().addAll(mapContatos(dto.getContatos(), paciente));
+
 
         pacienteRepository.save(paciente);
+
+
         return convertToDTO(paciente);
     }
 
@@ -65,6 +71,7 @@ public class PacienteService {
             throw new RuntimeException("Paciente não encontrado: " + id);
         }
         pacienteRepository.deleteById(id);
+
     }
 
     // --- Métodos auxiliares ---
