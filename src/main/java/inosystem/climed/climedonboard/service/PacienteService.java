@@ -16,6 +16,8 @@ import inosystem.climed.climedonboard.repository.TipoTelefoneRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,12 +35,24 @@ public class PacienteService {
     public PacienteDTO salvar(PacienteDTO dto) {
         Paciente paciente = new Paciente();
         setPacienteFields(paciente, dto);
+        if (dto.getPacNasc() != null) {
+            LocalDate hoje = LocalDate.now();
+            int idade = Period.between(dto.getPacNasc(), hoje).getYears();
+            paciente.setPacIdade(idade);
+
+            // Se idade < 18 anos, define automaticamente como infantil
+            paciente.setPacInfantil(idade < 18);
+        } else {
+            paciente.setPacIdade(null);
+            paciente.setPacInfantil(false);
+        }
 
         List<Contato> contatos = mapContatos(dto.getContatos(), paciente);
         paciente.setContatos(contatos);
 
         pacienteRepository.save(paciente);
         return convertToDTO(paciente);
+
     }
 
     public PacienteDTO buscarPorId(Long id) {
