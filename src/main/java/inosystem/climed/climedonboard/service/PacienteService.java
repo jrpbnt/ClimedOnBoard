@@ -82,6 +82,33 @@ public class PacienteService {
         return convertToDTO(paciente);
     }
 
+    public PacienteDTO atualizar(Long id, PacienteDTO dto) {
+        Paciente paciente = pacienteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Paciente não encontrado: " + id));
+
+        // Atualiza os campos simples do paciente
+        setPacienteFields(paciente, dto);
+
+        // Recalcula a idade e o campo pacInfantil (assim como no salvar)
+        if (dto.getPacNasc() != null) {
+            LocalDate hoje = LocalDate.now();
+            int idade = Period.between(dto.getPacNasc(), hoje).getYears();
+            paciente.setPacIdade(idade);
+            paciente.setPacInfantil(idade < 18);
+        } else {
+            paciente.setPacIdade(null);
+            paciente.setPacInfantil(false);
+        }
+
+        // Atualiza a lista de contatos:
+        paciente.getContatos().clear();
+        paciente.getContatos().addAll(mapContatos(dto.getContatos(), paciente));
+
+        pacienteRepository.save(paciente);
+
+        return convertToDTO(paciente);
+    }
+
     public void deletar(Long id) {
         if (!pacienteRepository.existsById(id)) {
             throw new RuntimeException("Paciente não encontrado: " + id);
@@ -225,7 +252,4 @@ public class PacienteService {
                 .collect(Collectors.toList());
     }
 
-    public ContatoMapper getContatoMapper() {
-        return contatoMapper;
-    }
 }
