@@ -40,6 +40,10 @@ public class PacienteService {
             int idade = Period.between(dto.getPacNasc(), hoje).getYears();
             paciente.setPacIdade(idade);
 
+            for (Contato contato : paciente.getContatos()) {
+                contato.setPaciente(paciente);
+                contato.setMedico(null); // Evita erro de FK
+            }
             // Se idade < 18 anos, define automaticamente como infantil
             paciente.setPacInfantil(idade < 18);
         } else {
@@ -53,29 +57,27 @@ public class PacienteService {
         pacienteRepository.save(paciente);
         return convertToDTO(paciente);
 
+
     }
+
 
     public PacienteDTO buscarPorId(Long id) {
         Paciente paciente = pacienteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Paciente não encontrado: " + id));
-        return convertToDTO(paciente);
-    }
 
-    public PacienteDTO atualizar(Long id, PacienteDTO dto) {
-        Paciente paciente = pacienteRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Paciente não encontrado: " + id));
+        // Recalcula a idade e o campo pacInfantil (assim como no salvar e atualizar)
+        if (paciente.getPacNasc() != null) {
+            LocalDate hoje = LocalDate.now();
+            int idade = Period.between(paciente.getPacNasc(), hoje).getYears();
+            paciente.setPacIdade(idade);
+            paciente.setPacInfantil(idade < 18);
+        } else {
+            paciente.setPacIdade(null);
+            paciente.setPacInfantil(false);
+        }
 
-        // Atualiza os campos simples do paciente
-        setPacienteFields(paciente, dto);
-
-        // Atualiza a lista de contatos:
-        // limpa a lista existente e adiciona os contatos convertidos mantendo a mesma instância da lista
-        paciente.getContatos().clear();
-        paciente.getContatos().addAll(mapContatos(dto.getContatos(), paciente));
-
-
+        // Se desejar salvar essa atualização no banco:
         pacienteRepository.save(paciente);
-
 
         return convertToDTO(paciente);
     }
@@ -96,7 +98,6 @@ public class PacienteService {
         paciente.setPacProf(dto.getPacProf());
         paciente.setPacEstcivil(dto.getPacEstcivil());
         paciente.setPacResp(dto.getPacResp());
-        paciente.setPacEmail(dto.getPacEmail());
         paciente.setPacConv(dto.getPacConv());
         paciente.setPacCart(dto.getPacCart());
         paciente.setPacObs(dto.getPacObs());
@@ -111,7 +112,6 @@ public class PacienteService {
         paciente.setPacHPMA(dto.getPacHPMA());
         paciente.setPacOBSmed(dto.getPacOBSmed());
         paciente.setPacConsulta(dto.getPacConsulta());
-        paciente.setPacEmailInfo(dto.isPacEmailInfo());
         paciente.setPacCorreioInfo(dto.isPacCorreioInfo());
         paciente.setPacSmsInfo(dto.isPacSmsInfo());
         paciente.setPacWhatsappInfo(dto.isPacWhatsappInfo());
@@ -136,9 +136,9 @@ public class PacienteService {
             contato.setEmail(contatoDTO.getEmail());
             contato.setPaciente(paciente);
 
-            if (contatoDTO.getTipoTelefone() != null && contatoDTO.getTipoTelefone().gettelt_id() != null) {
-                TipoTelefone tipoTelefone = tipoTelefoneRepository.findById(contatoDTO.getTipoTelefone().gettelt_id())
-                        .orElseThrow(() -> new RuntimeException("TipoTelefone não encontrado: " + contatoDTO.getTipoTelefone().gettelt_id()));
+            if (contatoDTO.getTipoTelefone() != null && contatoDTO.getTipoTelefone().getTelt_id() != null) {
+                TipoTelefone tipoTelefone = tipoTelefoneRepository.findById(contatoDTO.getTipoTelefone().getTelt_id())
+                        .orElseThrow(() -> new RuntimeException("TipoTelefone não encontrado: " + contatoDTO.getTipoTelefone().getTelt_id()));
                 contato.setTipoTelefone(tipoTelefone);
             }
 
@@ -162,7 +162,6 @@ public class PacienteService {
         dto.setPacProf(paciente.getPacProf());
         dto.setPacEstcivil(paciente.getPacEstcivil());
         dto.setPacResp(paciente.getPacResp());
-        dto.setPacEmail(paciente.getPacEmail());
         dto.setPacConv(paciente.getPacConv());
         dto.setPacCart(paciente.getPacCart());
         dto.setPacObs(paciente.getPacObs());
@@ -200,7 +199,7 @@ public class PacienteService {
 
                 if (contato.getTipoTelefone() != null) {
                     TipoTelefoneDTO tptDTO = new TipoTelefoneDTO();
-                    tptDTO.settelt_id(contato.getTipoTelefone().getTeltId());
+                    tptDTO.setTelt_id(contato.getTipoTelefone().getTeltId());
                     tptDTO.setTipo(contato.getTipoTelefone().getTipo());
                     cDTO.setTipoTelefone(tptDTO);
                 }
@@ -226,4 +225,7 @@ public class PacienteService {
                 .collect(Collectors.toList());
     }
 
+    public ContatoMapper getContatoMapper() {
+        return contatoMapper;
+    }
 }

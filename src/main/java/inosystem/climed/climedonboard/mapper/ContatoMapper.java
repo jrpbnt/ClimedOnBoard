@@ -20,7 +20,7 @@ public class ContatoMapper {
         // Mapear TipoTelefone para DTO
         if (contato.getTipoTelefone() != null) {
             TipoTelefoneDTO tipoTelefoneDTO = new TipoTelefoneDTO();
-            tipoTelefoneDTO.settelt_id(contato.getTipoTelefone().getTeltId());
+            tipoTelefoneDTO.setTelt_id(contato.getTipoTelefone().getTeltId());
 
             dto.setTipoTelefone(tipoTelefoneDTO);
         }
@@ -43,9 +43,9 @@ public class ContatoMapper {
         entity.setEmail(dto.getEmail());
 
         // Aqui criamos instâncias de TipoTelefone e TipoEmail apenas com o ID (associados depois no service)
-        if (dto.getTipoTelefone() != null && dto.getTipoTelefone().gettelt_id() != null) {
+        if (dto.getTipoTelefone() != null && dto.getTipoTelefone().getTelt_id() != null) {
             TipoTelefone tipoTelefone = new TipoTelefone();
-            tipoTelefone.setTeltId(dto.getTipoTelefone().gettelt_id());
+            tipoTelefone.setTeltId(dto.getTipoTelefone().getTelt_id());
             entity.setTipoTelefone(tipoTelefone);
         }
 
