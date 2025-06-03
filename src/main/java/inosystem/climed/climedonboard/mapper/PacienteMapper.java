@@ -14,7 +14,6 @@ public class PacienteMapper {
         dto.setPacProf(paciente.getPacProf());
         dto.setPacEstcivil(paciente.getPacEstcivil());
         dto.setPacResp(paciente.getPacResp());
-        dto.setPacEmail(paciente.getPacEmail());
         dto.setPacConv(paciente.getPacConv());
         dto.setPacCart(paciente.getPacCart());
         dto.setPacObs(paciente.getPacObs());
@@ -55,7 +54,6 @@ public class PacienteMapper {
         entity.setPacProf(dto.getPacProf());
         entity.setPacEstcivil(dto.getPacEstcivil());
         entity.setPacResp(dto.getPacResp());
-        entity.setPacEmail(dto.getPacEmail());
         entity.setPacConv(dto.getPacConv());
         entity.setPacCart(dto.getPacCart());
         entity.setPacObs(dto.getPacObs());
