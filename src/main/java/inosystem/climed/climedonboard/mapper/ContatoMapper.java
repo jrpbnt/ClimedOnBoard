@@ -6,52 +6,30 @@ import inosystem.climed.climedonboard.dto.TipoTelefoneDTO;
 import inosystem.climed.climedonboard.model.Contato;
 import inosystem.climed.climedonboard.model.TipoEmail;
 import inosystem.climed.climedonboard.model.TipoTelefone;
+import inosystem.climed.climedonboard.repository.TipoEmailRepository;
+import inosystem.climed.climedonboard.repository.TipoTelefoneRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ContatoMapper {
 
-    public ContatoDTO toDTO(Contato contato) {
-        ContatoDTO dto = new ContatoDTO();
-        dto.setContId(contato.getContId());
-        dto.setTelefone(contato.getTelefone());
-        dto.setEmail(contato.getEmail());
-
-        // Mapear TipoTelefone para DTO
-        if (contato.getTipoTelefone() != null) {
-            TipoTelefoneDTO tipoTelefoneDTO = new TipoTelefoneDTO();
-            tipoTelefoneDTO.setTelt_id(contato.getTipoTelefone().getTeltId());
-
-            dto.setTipoTelefone(tipoTelefoneDTO);
-        }
-
-        // Mapear TipoEmail para DTO
-        if (contato.getTipoEmail() != null) {
-            TipoEmailDTO tipoEmailDTO = new TipoEmailDTO();
-            tipoEmailDTO.settipoe_id(contato.getTipoEmail().getTipoeId());
-
-            dto.setTipoEmail(tipoEmailDTO);
-        }
-
-        return dto;
-    }
-
-    public Contato toEntity(ContatoDTO dto) {
+    public Contato toEntity(ContatoDTO dto, TipoEmailRepository tipoEmailRepository, TipoTelefoneRepository tipoTelefoneRepository) {
         Contato entity = new Contato();
         entity.setContId(dto.getContId());
         entity.setTelefone(dto.getTelefone());
         entity.setEmail(dto.getEmail());
 
-        // Aqui criamos instâncias de TipoTelefone e TipoEmail apenas com o ID (associados depois no service)
+        // Mapear tipoTelefone
         if (dto.getTipoTelefone() != null && dto.getTipoTelefone().getTelt_id() != null) {
-            TipoTelefone tipoTelefone = new TipoTelefone();
-            tipoTelefone.setTeltId(dto.getTipoTelefone().getTelt_id());
+            TipoTelefone tipoTelefone = tipoTelefoneRepository.findById(dto.getTipoTelefone().getTelt_id())
+                    .orElseThrow(() -> new IllegalArgumentException("TipoTelefone com ID " + dto.getTipoTelefone().getTelt_id() + " não encontrado"));
             entity.setTipoTelefone(tipoTelefone);
         }
 
+        // Mapear tipoEmail
         if (dto.getTipoEmail() != null && dto.getTipoEmail().gettipoe_id() != null) {
-            TipoEmail tipoEmail = new TipoEmail();
-            tipoEmail.setTipoeId(dto.getTipoEmail().gettipoe_id());
+            TipoEmail tipoEmail = tipoEmailRepository.findById(dto.getTipoEmail().gettipoe_id())
+                    .orElseThrow(() -> new IllegalArgumentException("TipoEmail com ID " + dto.getTipoEmail().gettipoe_id() + " não encontrado"));
             entity.setTipoEmail(tipoEmail);
         }
 

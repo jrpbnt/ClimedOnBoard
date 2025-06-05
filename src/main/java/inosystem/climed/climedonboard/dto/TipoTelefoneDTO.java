@@ -1,10 +1,8 @@
 package inosystem.climed.climedonboard.dto;
 
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
+
+
 public class TipoTelefoneDTO {
     private Long telt_id; // ou tipo do seu ID
     private String tipo; // Exemplo: "Celular", "Fixo", etc.
@@ -15,5 +13,13 @@ public class TipoTelefoneDTO {
 
     public void setTipo(String tipo) {
         this.tipo = tipo;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public Long getTelt_id() {
+        return telt_id;
     }
 }

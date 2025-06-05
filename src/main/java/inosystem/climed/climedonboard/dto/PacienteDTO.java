@@ -1,6 +1,7 @@
 package inosystem.climed.climedonboard.dto;
 
 
+import inosystem.climed.climedonboard.validator.CPFValid;
 import lombok.AllArgsConstructor;
 
 import lombok.Getter;
@@ -47,7 +48,9 @@ public class  PacienteDTO {
     private boolean pacCadConfirmado;
     private String pacienteEscol;
     private boolean pacAptoCetamina;
+    @CPFValid
     private String pacCpf;
+
     private LocalDateTime pacUltimaAlteracao;
     private Integer pacIdade;
     List<ContatoDTO> contatos;

@@ -319,6 +319,7 @@ public class Paciente {
 
     public LocalDateTime getPacUltimaAlteracao() {
         return pacUltimaAlteracao;
+
     }
 
     public void setPacUltimaAlteracao(LocalDateTime pacUltimaAlteracao) {
