@@ -1,8 +1,10 @@
 package inosystem.climed.climedonboard.controller;
 
 import inosystem.climed.climedonboard.dto.MedicoDTO;
+import inosystem.climed.climedonboard.exceptions.ResourceNotFoundException;
 import inosystem.climed.climedonboard.service.MedicoService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,8 +41,16 @@ public class MedicoController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> atualizar(@PathVariable Long id, @Valid @RequestBody MedicoDTO medicoDTO) {
-        service.atualizar(id, medicoDTO);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> atualizar(@PathVariable Long id, @Valid @RequestBody MedicoDTO medicoDTO) {
+        try {
+            service.atualizar(id, medicoDTO);
+            return ResponseEntity.noContent().build(); // Caso dê certo
+        } catch (ResourceNotFoundException ex) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro na atualização do médico: " + ex.getMessage());
+        }
     }
+
+
 }

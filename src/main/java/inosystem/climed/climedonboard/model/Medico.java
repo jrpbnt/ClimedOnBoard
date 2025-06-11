@@ -1,5 +1,7 @@
 package inosystem.climed.climedonboard.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -7,7 +9,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -25,7 +29,19 @@ public class Medico {
     @Column(unique = true, nullable = false)
     private String crm;
 
-    private String telefone;
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "medico_especialidades",
+            joinColumns = @JoinColumn(name = "medico_id"),
+            inverseJoinColumns = @JoinColumn(name = "especialidade_id")
+    )
+    private Set<Especialidade> especialidades = new HashSet<>();
+
+
+
+
+
+
 
     @Column(unique = true)
     private String cpf;
@@ -34,10 +50,10 @@ public class Medico {
 
     private int percentual;
 
-    private String especialidade;
 
     @OneToMany(mappedBy = "medico", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Contato> contatos = new ArrayList<>();
+    private List<Contato> contatos;
+
 
     @Version
     private Integer version = 0;  // Inicializa com 0 para evitar erro
@@ -69,14 +85,6 @@ public class Medico {
         this.crm = crm;
     }
 
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
     public String getCpf() {
         return cpf;
     }
@@ -101,13 +109,6 @@ public class Medico {
         this.percentual = percentual;
     }
 
-    public String getEspecialidade() {
-        return especialidade;
-    }
-
-    public void setEspecialidade(String especialidade) {
-        this.especialidade = especialidade;
-    }
 
     public Integer getVersion() {
         return version;
@@ -123,5 +124,14 @@ public class Medico {
 
     public void setContatos(List<Contato> contatos) {
         this.contatos = contatos;
+    }
+
+
+    public Set<Especialidade> getEspecialidades() {
+        return especialidades;
+    }
+
+    public void setEspecialidades(Set<Especialidade> especialidades) {
+        this.especialidades = especialidades;
     }
 }

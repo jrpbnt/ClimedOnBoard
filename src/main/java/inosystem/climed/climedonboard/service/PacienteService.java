@@ -215,33 +215,35 @@ public class PacienteService {
         dto.setPacCpf(paciente.getPacCpf());
         dto.setPacUltimaAlteracao(paciente.getPacUltimaAlteracao());
         dto.setPacIdade(paciente.getPacIdade());
-
-        // Mapear contatos
         if (paciente.getContatos() != null) {
+
             List<ContatoDTO> contatosDTO = paciente.getContatos().stream().map(contato -> {
                 ContatoDTO cDTO = new ContatoDTO();
                 cDTO.setContId(contato.getContId());
                 cDTO.setTelefone(contato.getTelefone());
                 cDTO.setEmail(contato.getEmail());
 
+                // Mapear tipoTelefone para TipoTelefoneDTO
                 if (contato.getTipoTelefone() != null) {
-                    TipoTelefoneDTO tptDTO = new TipoTelefoneDTO();
-                    tptDTO.setTelt_id(contato.getTipoTelefone().getTeltId());
-                    tptDTO.setTipo(contato.getTipoTelefone().getTipo());
-                    cDTO.setTipoTelefone(tptDTO);
+                    TipoTelefoneDTO tipoTelefoneDTO = new TipoTelefoneDTO();
+                    tipoTelefoneDTO.setTelt_id(contato.getTipoTelefone().getTeltId());
+                    tipoTelefoneDTO.setTipo(contato.getTipoTelefone().getTipo());
+                    cDTO.setTipoTelefone(tipoTelefoneDTO);
                 }
 
+                // Mapear tipoEmail para TipoEmailDTO
                 if (contato.getTipoEmail() != null) {
-                    TipoEmailDTO tpeDTO = new TipoEmailDTO();
-                    tpeDTO.settipoe_id(contato.getTipoEmail().getTipoeId());
-                    tpeDTO.setTipo(contato.getTipoEmail().getTipo());
-                    cDTO.setTipoEmail(tpeDTO);
+                    TipoEmailDTO tipoEmailDTO = new TipoEmailDTO();
+                    tipoEmailDTO.settipoe_id(contato.getTipoEmail().getTipoeId());
+                    tipoEmailDTO.setTipo(contato.getTipoEmail().getTipo());
+                    cDTO.setTipoEmail(tipoEmailDTO);
                 }
 
                 return cDTO;
             }).toList();
             dto.setContatos(contatosDTO);
         }
+
 
         return dto;
     }
