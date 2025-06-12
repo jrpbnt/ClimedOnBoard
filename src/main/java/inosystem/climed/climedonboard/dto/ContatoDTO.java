@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ContatoDTO {
     private Long contId;
-
     private String telefone;
     private TipoTelefoneDTO tipoTelefone;
-
     private String email;
     private TipoEmailDTO tipoEmail;
 
@@ -40,14 +38,6 @@ public class ContatoDTO {
         this.tipoTelefone = tipoTelefone;
     }
 
-    public TipoEmailDTO getTipoEmail() {
-        return tipoEmail;
-    }
-
-    public void setTipoEmail(TipoEmailDTO tipoEmail) {
-        this.tipoEmail = tipoEmail;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -56,6 +46,12 @@ public class ContatoDTO {
         this.email = email;
     }
 
-    public ContatoDTO(String telefone, Long teltId, String email, Long tipoeId) {
+    public TipoEmailDTO getTipoEmail() {
+        return tipoEmail;
+    }
+
+    public void setTipoEmail(TipoEmailDTO tipoEmail) {
+        this.tipoEmail = tipoEmail;
     }
 }
+
